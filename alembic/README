@@ -1,0 +1,15 @@
+Generic single-database configuration.
+
+change in directory alembic file env.py
+    from config.settings import BaseMeta, BASE_DIR
+    import os
+    from dotenv import load_dotenv
+
+    load_dotenv(os.path.join(BASE_DIR, ".env"))
+    target_metadata = [BaseMeta.metadata] 
+    config.set_main_option("sqlalchemy.url", os.getenv("DB_ENGINE"))
+
+alembic init alembic
+alembic revision --autogenerate -m "<your_commit>"
+alembic upgrade head
+
