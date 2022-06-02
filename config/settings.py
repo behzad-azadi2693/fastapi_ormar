@@ -16,3 +16,13 @@ metadata = sqlalchemy.MetaData()
 class BaseMeta(ormar.ModelMeta):
     metadata = metadata
     database = database
+
+
+try:
+    os.mkdir(os.path.join(BASE_DIR, 'media'))
+    print('directory for save manage is created')
+except:
+    print('directory is exits')
+
+
+

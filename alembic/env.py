@@ -6,7 +6,8 @@ from sqlalchemy import pool
 from alembic import context
 
 import os
-from config.settings import BaseMeta, BASE_DIR
+from config.settings import BASE_DIR
+from config.models import BaseMeta
 from dotenv import load_dotenv
 
 load_dotenv(os.path.join(BASE_DIR, ".env"))
