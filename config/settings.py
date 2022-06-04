@@ -12,6 +12,10 @@ load_dotenv(os.path.join(BASE_DIR/'.env'))
 database = databases.Database(os.getenv('DB_ENGINE'))
 metadata = sqlalchemy.MetaData()
 
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+SENDING_NUMBER = os.getenv('SENDING_NUMBER')
+API_KEY = os.getenv('API_KEY')
 
 class BaseMeta(ormar.ModelMeta):
     metadata = metadata
