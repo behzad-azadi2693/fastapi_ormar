@@ -7,10 +7,10 @@ from .utils import check_user_healthy, send_sms, get_current_user
 from config.settings import SECRET_KEY
 from random import randint
 import jwt
+from fastapi.security import OAuth2PasswordRequestForm
 
 
 router = APIRouter(prefix='/accounts', tags=['accounts'])
-
 
 
 @router.post('/signin/')
@@ -30,8 +30,9 @@ async def sign_in(request:Request, background_tasks:BackgroundTasks, phone:UserB
     return user
 
 @router.post('/check/sms/')
-async def check_otp(request:Request):
+async def check_otp(request:Request,data:OAuth2PasswordRequestForm=Depends()):
     my_phone = request.session.get('my_phone')
+    sms = data.password
     user = await UserModel.objects.get_or_none(phonenumber=my_phone)
 
     if user is None or not check_user_healthy(user.otp, sms, user.time_otp):
@@ -45,7 +46,3 @@ async def check_otp(request:Request):
 
     return {'access_token': access_token, 'token_type': 'bearer'}
 
-
-@router.get('/')
-def chek(user=Depends(get_current_user)):
-    return 'ok'
