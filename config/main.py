@@ -3,11 +3,13 @@ from typing import Dict, Optional, List
 from .settings import database, SECRET_KEY
 from accounts import router as accountsRouter
 from products import router as productsRouter
+from carts import router as cartsRouter
 from starlette.middleware.sessions import SessionMiddleware
 
 app = FastAPI()
 app.include_router(accountsRouter.router)
 app.include_router(productsRouter.router)
+app.include_router(cartsRouter.router)
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 app.state.database = database

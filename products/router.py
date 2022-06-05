@@ -77,6 +77,8 @@ async def create_product(id:int=Path(...), product:ProductSchema=Depends(), user
         category = category,
     )
 
+    list_image = []
+
     for img in product.image:
         pre, post = img.filename.split('.')
         new_name = f'{pre}-{datetime.now()}.{post}'
@@ -87,7 +89,9 @@ async def create_product(id:int=Path(...), product:ProductSchema=Depends(), user
             image = await img.read()
             f.write(image)
         
-        await ImageModel.objects.create(image=new_name, product=product_new)
+        list_image.append(ImageModel(image=new_name, product=product_new))
+
+    await ImageModel.objects.bulk_create(list_image)
 
     return product_new
 
@@ -102,6 +106,7 @@ async def add_image(id:int=Path(...), image:list[UploadFile]=File(...), user:Use
     if product is None:
         return JSONResponse(status_code=404, content='product not found')
 
+    list_image = []
     for img in image:
         pre, post = img.filename.split('.')
         new_name = f'{pre}-{datetime.now()}.{post}'
@@ -111,8 +116,10 @@ async def add_image(id:int=Path(...), image:list[UploadFile]=File(...), user:Use
         with open(path_save, 'wb') as f:
             image = await img.read()
             f.write(image)
-        
-        await ImageModel.objects.create(image=new_name, product=product_new)
+
+        list_image.append(ImageModel(image=new_name, product=product))
+
+    await ImageModel.objects.bulk_create(list_image)
 
     return JSONResponse(status_code=201, content='image all added')
 
@@ -171,7 +178,7 @@ async def create_category(user:UserSchema=Depends(get_current_user_admin)):
     if category is None:
         return JSONResponse(status_code=404, content='category is not found')
 
-    category.all_product.clear(keep_reversed=False)
+    await category.all_product.clear(keep_reversed=False)
     await category.delete()
 
     return JSONResponse(status_code=200, content='category and product related all remove')
