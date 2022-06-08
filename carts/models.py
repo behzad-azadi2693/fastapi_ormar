@@ -3,12 +3,16 @@ from accounts.models import UserModel
 from products.models import ProductsModel
 from config.settings import BaseMeta
 from typing import Optional
+from datetime import datetime
+from sqlalchemy import func
 
 
 class BasketModel(ormar.Model):
     id:int = ormar.Integer(primary_key=True)
     user:Optional[UserModel] = ormar.ForeignKey(UserModel, related_name='user_baskets')
     payed:bool = ormar.Boolean(default=False)
+    for_payed:bool = ormar.Boolean(default=False)
+    time:datetime = ormar.DateTime(server_default=func.now(), nullable=True)
     moneyـpaid:float = ormar.Float(default=0.0, nullable=True)
 
     class Meta(BaseMeta):
@@ -34,4 +38,5 @@ class AddressModel(ormar.Model):
 
     class Meta(BaseMeta):
         tablename = 'address'
-    
+
+

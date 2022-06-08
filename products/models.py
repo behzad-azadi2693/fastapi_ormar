@@ -4,8 +4,7 @@ from enum import Enum
 from typing import Optional
 from datetime import datetime
 from sqlalchemy import func
-
-
+from typing import Dict, Any
 
 class CategoryModel(ormar.Model):
     id:int = ormar.Integer(primary_key=True)
@@ -26,26 +25,19 @@ class ProductsModel(ormar.Model):
     id:int = ormar.BigInteger(primary_key=True)
     name:str = ormar.String(max_length=255)
     description:str = ormar.Text()
-    attribute:str = ormar.JSON()
-    gender = ormar.String(max_length=100, choices=list(GENDER))
+    attribute:Dict = ormar.Text()
+    gender:Enum = ormar.String(max_length=100, choices=list(GENDER))
     number:int = ormar.Integer()
     price:int = ormar.Integer()
     discount:float = ormar.Float(nullable=True, default=0.0)
     publish:bool = ormar.Boolean(default=False)
     created:datetime = ormar.DateTime(server_default=func.now(), nullable=True)
+    images:str = ormar.Text()
     category:Optional[CategoryModel] = ormar.ForeignKey(CategoryModel, related_name='all_product')
 
     class Meta(BaseMeta):
         tablename = 'products'
 
-
-class ImageModel(ormar.Model):
-    id:int = ormar.BigInteger(primary_key=True)
-    image:str = ormar.String(max_length=1000)
-    product:Optional[ProductsModel] = ormar.ForeignKey(ProductsModel, related_name='all_image')
-
-    class Meta(BaseMeta):
-        tablename = 'images'
 
 class CommentsModel(ormar.Model):
     id:int = ormar.BigInteger(primary_key=True)

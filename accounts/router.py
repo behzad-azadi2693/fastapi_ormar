@@ -29,6 +29,7 @@ async def sign_in(request:Request, background_tasks:BackgroundTasks, phone:UserB
 
     return user
 
+
 @router.post('/check/sms/')
 async def check_otp(request:Request,data:OAuth2PasswordRequestForm=Depends()):
     my_phone = request.session.get('my_phone')

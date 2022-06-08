@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Path, status
+from fastapi import APIRouter, Depends, Path, status, BackgroundTasks
 from fastapi.responses import JSONResponse
 from .models import BasketModel, OrdersModel, AddressModel
 from accounts.utils import get_current_user
@@ -6,18 +6,21 @@ from accounts.schema import UserSchema
 from .response import BasketResponse, MyBasketResponse
 from products.models import ProductsModel
 from .schema import AddressSchema
+from datetime import datetime
 
 
 router = APIRouter(prefix='/carts', tags=['cart'])
 
 
-@router.get('/all/baskets/', response_model=list[BasketResponse])
+basketResponse = BasketModel.get_pydantic(include={'id', 'payed', 'moneyـpaied'})
+@router.get('/all/baskets/', response_model=list[basketResponse])
 async def all_baskets(user:UserSchema=Depends(get_current_user)):
     bskets = await BasketModel.objects.filter(user__id=user.get('id'))
 
     return basket
 
 
+basketResponse = BasketModel.get_pydantic(include={'id', 'payed', 'moneyـpaied','basket_orders'})
 @router.get('/my/basket/{id:int}', response_model=MyBasketResponse)
 async def my_basket(id:int=Path(...), user:UserSchema=Depends(get_current_user)):
     basket = await BasketModel.objects.prefech_related('basket_orders').get_or_one(id=id, user__id = user.get('id'))
@@ -46,8 +49,9 @@ async def add_product(product_id:int=Path(...), user:UserSchema=Depends(get_curr
         return JSONResponse(status_code=200, content='produt is exists in basket')
 
 
+addressSchema = AddressModel.get_pydantic(include={'name','phone','address'})
 @router.post('/add/address/')
-async def add_address(user:UserSchema=Depends(get_current_user), address:AddressSchema=Depends()):
+async def add_address(user:UserSchema=Depends(get_current_user), address:addressSchema=Depends()):
     basket = await BasketModel.objects.get_or_none(user__id=user.get('id'), payed=False)
 
     if basket is None:
@@ -121,3 +125,4 @@ async def remove_orders(user:UserSchema=Depends(get_current_user), orders_id:int
     await order.delete()
 
     return JSONResponse(status_code=200, content='order is deleted')
+
