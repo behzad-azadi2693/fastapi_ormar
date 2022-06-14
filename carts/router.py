@@ -3,9 +3,7 @@ from fastapi.responses import JSONResponse
 from .models import BasketModel, OrdersModel, AddressModel
 from accounts.utils import get_current_user
 from accounts.schema import UserSchema
-from .response import BasketResponse, MyBasketResponse
 from products.models import ProductsModel
-from .schema import AddressSchema
 from datetime import datetime
 
 
@@ -21,7 +19,7 @@ async def all_baskets(user:UserSchema=Depends(get_current_user)):
 
 
 basketResponse = BasketModel.get_pydantic(include={'id', 'payed', 'moneyـpaied','basket_orders'})
-@router.get('/my/basket/{id:int}', response_model=MyBasketResponse)
+@router.get('/my/basket/{id:int}', response_model=basketResponse)
 async def my_basket(id:int=Path(...), user:UserSchema=Depends(get_current_user)):
     basket = await BasketModel.objects.prefech_related('basket_orders').get_or_one(id=id, user__id = user.get('id'))
 
