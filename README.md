@@ -21,5 +21,6 @@ django-rest-framework
 ​
 ### how to run
 install docker and docker-compose 
-​
+
+
 runing docker-compose.yml (docker-compose up -d) 
